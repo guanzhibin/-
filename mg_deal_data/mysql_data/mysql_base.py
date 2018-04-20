@@ -1,7 +1,7 @@
 #!/usr/bin/env  
 #coding:utf8
 import pymysql
-# from DBUtils.PooledDB import PooledDB  
+from DBUtils.PooledDB import PooledDB  
 class mysqlDB(object):
     def __init__(self,m_host,m_port,m_user,m_pwd,m_db):                              #连接数据库  
         self.m_host = m_host
@@ -9,12 +9,13 @@ class mysqlDB(object):
         self.m_user = m_user
         self.m_pwd = m_pwd
         self.m_db  = m_db
-        # self.pool = PooledDB(pymysql,5,host=self.m_host,user=self.m_user,passwd=self.m_pwd,db=self.m_db,port=self.m_port,charset="utf8") 
+        db_message = dict(host=self.m_host,user=self.m_user,passwd=self.m_pwd,db=self.m_db,port=self.m_port,charset="utf8")
+        args = (15,15,30,100,True,0,None)
+        self.pool = PooledDB(pymysql,*args,**db_message) 
     def base_connect(self):
-        conn=pymysql.connect(host=self.m_host,user=self.m_user,port=self.m_port,passwd=self.m_pwd,db=self.m_db,charset = 'utf8')
+        # conn=pymysql.connect(host=self.m_host,user=self.m_user,port=self.m_port,passwd=self.m_pwd,db=self.m_db,charset = 'utf8')
+        conn = self.pool.connection()
         cur=conn.cursor(cursor=pymysql.cursors.DictCursor)
-        # conn = self.pool.connection()
-        # cur=conn.cursor()
         return conn,cur
     def mselect(self,sql,value):
         conn,cur = self.base_connect()
